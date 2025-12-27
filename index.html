@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Aditya Tambe | Build Tek Events</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --glass: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.2);
+  --primary: #ff2e63;
+  --secondary: #08d9d6;
+  --bg-dark: #1a1a2e;
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  overflow:hidden;
+  color:#fff;
+  /* Use dvh for better mobile browser support */
+  height: 100vh;
+  height: 100dvh; 
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: -1;
+}
+
+/* --- SCENE LAYOUT --- */
+.scene{
+  height:100%;
+  display:flex;
+  flex-direction: column;
+  justify-content:center;
+  align-items:center;
+  perspective:1200px;
+  gap: 30px;
+  padding: 20px;
+}
+
+/* --- 3D CARD --- */
+.card{
+  width:100%;
+  max-width: 360px;
+  height:220px;
+  position:relative;
+  transform-style:preserve-3d;
+  /* iOS Safari specific fix for 3D transforms */
+  -webkit-transform-style: preserve-3d; 
+  transition:transform 0.8s cubic-bezier(.2, .8, .2, 1);
+  cursor:pointer;
+}
+
+/* Flip state handled by class for touch devices */
+.card.flipped, .card:hover{
+  transform:rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+}
+
+.face{
+  position:absolute;
+  inset:0;
+  -webkit-backface-visibility: hidden; /* Safari Fix */
+  backface-visibility:hidden;
+  border-radius:24px;
+  padding:25px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 15px 35px rgba(0,0,0,0.2),
+    0 5px 15px rgba(0,0,0,0.1),
+    inset 0 0 20px rgba(255,255,255,0.1);
+}
+
+/* FRONT DESIGN */
+.front{ display:flex; flex-direction:column; justify-content: space-between; transform: rotateY(0deg); }
+.front h2{
+  margin:0; font-size:24px; font-weight:800; letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.front p{ 
+  margin:4px 0 0; 
+  font-weight: 600; 
+  font-size: 13px; 
+  background: rgba(0,0,0,0.2);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: #fff;
+}
+
+.contact-details{ font-size:13px; line-height:1.9; margin-top: 15px; font-weight: 500;}
+.contact-details i { margin-right: 12px; width: 20px; text-align: center; color: #fff; filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); }
+
+.logo-brand { 
+  font-weight: 900; 
+  letter-spacing: 2px; 
+  font-size: 11px; 
+  text-align: right; 
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+/* BACK DESIGN */
+.back{ 
+  transform:rotateY(180deg); 
+  -webkit-transform: rotateY(180deg);
+  display:flex; flex-direction:column; justify-content:center; 
+  background: rgba(0, 0, 0, 0.4); 
+}
+.back h3{ 
+  margin:0 0 15px 0; 
+  font-size:15px; 
+  color: var(--secondary);
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  border-bottom: 1px solid rgba(255,255,255,0.2); 
+  padding-bottom: 8px;
+}
+.feature-list { display: flex; flex-direction: column; gap: 8px; }
+.feature-list span{ font-size:13px; font-weight: 500; display: flex; align-items: center; }
+.feature-list span::before { 
+    content: "•"; 
+    color: var(--primary); 
+    font-size: 24px; 
+    line-height: 0;
+    margin-right: 10px; 
+}
+
+/* --- BUTTONS --- */
+.controls-container {
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+    width: 100%;
+    max-width: 360px;
+    justify-content: center;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn:active { transform: scale(0.95); }
+
+.btn i { font-size: 20px; }
+.btn-icon { width: 54px; flex-shrink: 0; }
+.btn-web { color: #333; }
+.btn-li { color: #0077b5; }
+
+.btn-save {
+    flex-grow: 1; /* Fills remaining space */
+    background: #111;
+    color: #fff;
+    gap: 10px;
+}
+
+.cta-text{
+  position:fixed;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  font-size:12px;
+  opacity: 0.7;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  
+  <div class="card" onclick="this.classList.toggle('flipped')">
+    <div class="face front">
+      <div>
+        <h2>Aditya Tambe</h2>
+        <p>Event Marketing Manager</p>
+        <div class="contact-details">
+          <div><i class="fa-solid fa-phone"></i> +91 95792 76502</div>
+          <div style="margin-top:8px"><i class="fa-solid fa-envelope"></i> aditya@buildtek.in</div>
+        </div>
+      </div>
+      <div class="logo-brand">Build Tek Events</div>
+    </div>
+
+    <div class="face back">
+      <div class="logo-brand" style="text-align:center; margin-bottom:20px; color:#fff;">BUILD TEK EVENTS</div>
+      <h3>Where Construction Meets Tech</h3>
+      <div class="feature-list">
+          <span>Industry Summits</span>
+          <span>Infrastructure Leadership</span>
+          <span>Future-Ready Real Estate</span>
+          <span>Build Tek CORE Summit 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-container">
+    
+    <a href="https://www.buildtek.in" target="_blank" class="btn btn-icon btn-web" title="Visit Website">
+      <i class="fa-solid fa-globe"></i>
+    </a>
+
+    <a href="https://www.linkedin.com/in/aditya-tambe-2109521a1/" target="_blank" class="btn btn-icon btn-li" title="LinkedIn Profile">
+      <i class="fa-brands fa-linkedin"></i>
+    </a>
+
+    <button onclick="shareOrDownload()" class="btn btn-save" title="Save Contact">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>Save Contact</span>
+    </button>
+
+  </div>
+
+</div>
+
+<div class="cta-text">
+  Tap card to flip
+</div>
+
+<script>
+async function shareOrDownload() {
+    const vCardData = [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        "N:Tambe;Aditya;;;",
+        "FN:Aditya Tambe",
+        "ORG:Build Tek Events",
+        "TITLE:Event Marketing Manager",
+        "TEL;TYPE=WORK,VOICE:+919579276502",
+        "EMAIL;TYPE=WORK:aditya@buildtek.in",
+        "URL:https://www.buildtek.in",
+        "URL;type=LinkedIn:https://www.linkedin.com/in/aditya-tambe-2109521a1/",
+        "END:VCARD"
+    ].join("\r\n"); // CRLF is better for compatibility
+
+    const file = new File([vCardData], "Aditya_Tambe.vcf", { type: "text/vcard" });
+
+    // METHOD 1: Native Share (Best for iOS 15+)
+    // This opens the iPhone "Share Sheet" where you can tap "Contacts"
+    if (navigator.share && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({
+                files: [file],
+                title: 'Aditya Tambe Contact',
+                text: 'Save this contact'
+            });
+            return; // Success, stop here
+        } catch (error) {
+            console.log("Share failed or canceled", error);
+            // If share fails, fall through to method 2
+        }
+    }
+
+    // METHOD 2: Direct Download (Desktop / Android / Older iOS)
+    const blob = new Blob([vCardData], { type: "text/vcard" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = "Aditya_Tambe.vcf";
+    
+    // CRITICAL FOR IOS SAFARI: Append to body before clicking
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Cleanup
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+</script>
+
+</body>
+</html>
